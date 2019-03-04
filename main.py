@@ -16,6 +16,7 @@ class Background:
         """
         self.canvas = canvas
         self.canvas.create_line(0, m.height / 2, m.width, m.height / 2)
+        self.canvas.create_text(75, m.height - 15, text="Press 'space' to jump", font=("Helvetica", 10))
 
 
 class Hurdle:
@@ -196,7 +197,7 @@ def loop(hurdle_stack, player):
             m.root.update_idletasks()
             m.root.update()
             time.sleep(0.01)
-        if m.canvas.game_score >= 10:
+        if m.canvas.game_score >= 45:
             while 1:
                 m.canvas.create_text(400, 100, text="You won! Your clue is: \n 'rosemary bush' = 'dave'", font=("Comic Sans", 25))
                 m.root.update_idletasks()
