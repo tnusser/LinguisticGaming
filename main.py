@@ -1,6 +1,7 @@
 from tkinter import *
 import time
 import random
+from tkinter import messagebox
 
 
 class Background:
@@ -29,7 +30,7 @@ class Hurdle:
         :param speed: value for the speed of a hurdle
         """
         self.canvas = canvas
-        self.id = canvas.create_rectangle(10, 10, 25, 25, fill="Black")
+        self.id = canvas.create_rectangle(10, random.randint(4, 15), 25, 25, fill="Black")
         self.canvas.move(self.id, 800, 274)
         self.x = speed
         self.y = 0
@@ -58,7 +59,7 @@ class HurdleStack:
         :param canvas:
         """
         self.canvas = canvas
-        self.hurdle_list = [Hurdle(canvas, -2)]
+        self.hurdle_list = [Hurdle(canvas, -1.5)]
         self.next_hurdle_index = 0
         self.passed_hurdles = []
 
@@ -69,22 +70,22 @@ class HurdleStack:
         """
         if self.canvas.coords(self.hurdle_list[self.next_hurdle_index].id)[2] < self.generate_spawn_pos():
             if self.canvas.game_score < 10:
-                speed = -2.5
+                speed = -2
                 self.increase_speed(speed)
             elif self.canvas.game_score < 20:
-                speed = -3
+                speed = -2.5
                 self.increase_speed(speed)
             elif self.canvas.game_score < 30:
-                speed = -3.5
+                speed = -3
                 self.increase_speed(speed)
             elif self.canvas.game_score < 40:
-                speed = -4
+                speed = -3.5
                 self.increase_speed(speed)
             elif self.canvas.game_score < 50:
-                speed = -4.5
+                speed = -4
                 self.increase_speed(speed)
             else:
-                speed = -5
+                speed = -4.5
                 self.increase_speed(speed)
             self.hurdle_list.append(Hurdle(self.canvas, speed))
             self.next_hurdle_index += 1
@@ -103,7 +104,7 @@ class HurdleStack:
         Generates a random border value to specify if a new hurdle can be created yet
         :return:
         """
-        return random.randint(400, 650)
+        return random.randint(400, 670)
 
 
 class Player:
@@ -135,7 +136,8 @@ class Player:
         for hurdle in m.hurdle_stack.hurdle_list:
             if self.hit_hurdle(pos, hurdle):
                 self.hit = True
-                self.canvas.create_text(200, 200, text="Game over")
+                m.existing = False
+
 
     def jump(self, event):
         """
@@ -179,20 +181,33 @@ def loop(hurdle_stack, player):
     :param player: instance of the player
     :return:
     """
-    while m.existing:
-        if m.start:
-            if not player.hit:
-                player.draw()
-                hurdle_stack.create_hurdle()
-                for hurdle in hurdle_stack.hurdle_list:
-                    hurdle.draw()
-                if player.jumping:
-                    player.draw_jump()
+    try:
+        while m.existing:
+            if m.start:
+                if not player.hit:
+                    player.draw()
+                    hurdle_stack.create_hurdle()
+                    for hurdle in hurdle_stack.hurdle_list:
+                        hurdle.draw()
+                    if player.jumping:
+                        player.draw_jump()
 
-            m.canvas.itemconfig(m.score_obj, text=m.canvas.game_score)
-        m.root.update_idletasks()
-        m.root.update()
-        time.sleep(0.01)
+                m.canvas.itemconfig(m.score_obj, text=m.canvas.game_score)
+            m.root.update_idletasks()
+            m.root.update()
+            time.sleep(0.01)
+        if m.canvas.game_score >= 10:
+            while 1:
+                m.canvas.create_text(400, 100, text="You won! Your clue is: \n 'rosemary bush' = 'dave'", font=("Comic Sans", 25))
+                m.root.update_idletasks()
+                m.root.update()
+                time.sleep(0.01)
+        else:
+            m.existing = True
+            m.root.destroy()
+            m.start_game()
+    except Exception as e:
+        print("QUIT")
 
 
 class Menu:
@@ -205,14 +220,25 @@ class Menu:
         Init method which sets attributes and creates buttons
         """
         self.game = Tk()
-        self.game.geometry("800x600")
+        self.game.title("Hurdling")
+        self.game.geometry("650x600")
+        self.game.resizable(0, 0)
         self.game.update()
 
-        start_btn = Button(self.game, text="Start Game")
-        start_btn.bind("<Button-1>", self.start_game)
-        end_btn = Button(self.game, text="Quit", fg="Red", command=self.exit)
-        start_btn.pack()
-        end_btn.pack()
+        start_btn = Button(self.game, text="Start Game", font=("Helvetica", 16))
+        start_btn.bind("<Button-1>", self.start_game_menu)
+        end_btn = Button(self.game, text="Quit", fg="Red", command=self.exit, font=("Helvetica", 16))
+        Label(self.game, text="Our hero arrives at the bottom of a hill. ", font=("Helvetica", 16)).grid(row=1,
+                                                                                                         columnspan=3,
+                                                                                                         padx=20)
+        Label(self.game,
+              text="To reach the next clue he has to climb the hill but watch out there \n are obstacles in your way "
+                   "you need to overcome. \n \n To reach the clue you have to jump over at least 45 hurdles. \n Good "
+                   "luck!",
+              font=("Helvetica", 16)).grid(row=2, columnspan=3, padx=20)
+
+        start_btn.grid(row=4, column=1)
+        end_btn.grid(row=4, column=2, padx=100)
         self.start = False
         self.exit = False
         self.root = None
@@ -232,19 +258,28 @@ class Menu:
         self.exit = True
         self.game.destroy()
 
-    def start_game(self, event):
+    def start_game_menu(self, event):
+        self.game.destroy()
+        self.start_game()
+
+    def ask_quit(self):
+        if messagebox.askokcancel("Quit", "You want to quit?"):
+            self.root.destroy()
+
+    def start_game(self):
         """
         Method which switches from menu to game itself and generates all the object instances
         :param event:
         :return:
         """
-        self.game.destroy()
         self.root = Tk()
         self.root.lift()
         self.root.attributes("-topmost", True)
         self.root.geometry("800x600")
-        self.root.title("Hürdenlauf")
+        self.root.title("Hurdling")
         self.root.resizable(0, 0)
+        self.root.focus_force()
+        self.root.protocol("WM_DELETE_WINDOW", self.ask_quit)
 
         self.canvas = Canvas(self.root, width=self.width, height=self.height, bd=0, highlightthickness=0)
         self.canvas.game_score = 0
@@ -261,6 +296,7 @@ class Menu:
 """
 Instantiates menu
 """
+print("START")
 m = Menu()
 while not m.start and not m.exit:
     m.game.update_idletasks()
