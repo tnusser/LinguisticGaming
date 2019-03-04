@@ -7,6 +7,7 @@ from tkinter import messagebox
 class Background:
     """
     Class for objects in the background of the game
+    @author Tobias Nusser
     """
 
     def __init__(self, canvas):
@@ -22,6 +23,7 @@ class Background:
 class Hurdle:
     """
     Class for the individual hurdles
+    @author Tobias Nusser
     """
 
     def __init__(self, canvas, speed):
@@ -51,7 +53,8 @@ class Hurdle:
 
 class HurdleStack:
     """
-    Stack of created hurdles
+    Class for stack of created hurdles
+    @author Tobias Nusser
     """
 
     def __init__(self, canvas):
@@ -111,6 +114,7 @@ class HurdleStack:
 class Player:
     """
     Class of the player (red ball)
+    @author Tobias Nusser
     """
 
     def __init__(self, canvas):
@@ -178,6 +182,7 @@ class Player:
 def loop(hurdle_stack, player):
     """
     Main loop for the hurdling game
+    @author Benjamin Morgantti
     :param hurdle_stack: stack of hurdles currently generated
     :param player: instance of the player
     :return:
@@ -214,6 +219,7 @@ def loop(hurdle_stack, player):
 class Menu:
     """
     Class for the game menu
+    @author Benjamin Morgantti
     """
 
     def __init__(self):
@@ -270,7 +276,6 @@ class Menu:
     def start_game(self):
         """
         Method which switches from menu to game itself and generates all the object instances
-        :param event:
         :return:
         """
         self.root = Tk()
@@ -296,6 +301,7 @@ class Menu:
 
 """
 Instantiates menu
+@author Benjamin Morgantti
 """
 print("START")
 m = Menu()
