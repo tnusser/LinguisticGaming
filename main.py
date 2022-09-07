@@ -182,7 +182,7 @@ class Player:
 def loop(hurdle_stack, player):
     """
     Main loop for the hurdling game
-    @author Benjamin Morgantti
+    @author Tobias Nusser
     :param hurdle_stack: stack of hurdles currently generated
     :param player: instance of the player
     :return:
@@ -219,7 +219,7 @@ def loop(hurdle_stack, player):
 class Menu:
     """
     Class for the game menu
-    @author Benjamin Morgantti
+    @author Tobias Nusser
     """
 
     def __init__(self):
@@ -301,7 +301,7 @@ class Menu:
 
 """
 Instantiates menu
-@author Benjamin Morgantti
+@author Tobias Nusser
 """
 print("START")
 m = Menu()
